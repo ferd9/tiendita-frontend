@@ -1,0 +1,9 @@
+.box-login{
+  background-color: blueviolet;
+  position: absolute;
+  width: 600px;
+  height: 250px;
+  padding: 10px;
+  margin-left:auto;
+  margin-right:auto;
+}
