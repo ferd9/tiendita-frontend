@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductoService } from '../../services/producto.service';
+import { Categoria, Proveedores, Tag } from '../interfaces/tienda.interfaces';
+import { ProveedorComponent } from '../proveedor/proveedor.component';
 
 @Component({
   selector: 'app-producto',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ProveedorComponent],
   templateUrl: './producto.component.html',
   styleUrl: './producto.component.css'
 })
@@ -18,6 +20,10 @@ export class ProductoComponent {
 
   public countNuevos:number = 0;
 
+  public proveedores: Proveedores[] = [];
+  public categoria: Categoria[] = [];
+  public tag: Tag[] = [];
+
   //constructor(private changeDetector: ChangeDetectorRef){}
 
   public formProducto: FormGroup = this.fb.group({
@@ -26,7 +32,12 @@ export class ProductoComponent {
     'precio': [0.0, [Validators.min(0),Validators.required]],
     'imgenUrl': [''],
     'disponible':[true],
-    'fechaDeLanzamiento':[new Date,[Validators.required]]
+    'fechaDeLanzamiento':[new Date,[Validators.required]],
+    'proveedores': this.fb.array([
+      this.fb.group({
+        'nombre': ['']
+      })
+    ])
   });
 
  registrarProducto(){
@@ -54,5 +65,10 @@ export class ProductoComponent {
 
     }
 
+  }
+
+
+  agregarProveedor($event: Proveedores) {
+    this.proveedores.push($event);
   }
 }

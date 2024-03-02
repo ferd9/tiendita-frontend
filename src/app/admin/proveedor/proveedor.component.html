@@ -1,1 +1,58 @@
-<p>proveedor works!</p>
+
+<div class="card">
+  <div class="card-header">
+    Registrar Proveedor
+  </div>
+  <div class="card-body">
+
+    <form [formGroup]="formProveedor" (ngSubmit)="agregarProveedor()" class="row g-3">
+      <div class="col-md-6">
+        <label for="inputEmail4" class="form-label">Nombre</label>
+        <input
+        type="text"
+        formControlName="nombre"
+        name="nombre"
+        class="form-control"
+        id="inputEmail4">
+      </div>
+      <div class="col-md-6">
+        <label for="inputPassword4" class="form-label">Ruc</label>
+        <input type="text"
+        class="form-control"
+        formControlName="ruc"
+        name="ruc"
+        id="inputPassword4">
+      </div>
+      <div class="col-12">
+        <label for="inputAddress" class="form-label">Direccion</label>
+        <input type="text"
+        class="form-control"
+        formControlName="direccion"
+        name="direccion"
+        id="inputAddress"
+        placeholder="1234 Main St">
+      </div>
+      <div class="col-md-6">
+        <label for="inputAddress2" class="form-label">Telefono</label>
+        <input type="text"
+        class="form-control"
+        formControlName="telefono"
+        name="telefono"
+        id="inputAddress2"
+        placeholder="963258741">
+      </div>
+      <div class="col-md-6">
+        <label for="inputCity" class="form-label">Email</label>
+        <input type="text"
+        class="form-control"
+        formControlName="email"
+        name="email"
+         id="inputCity">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
