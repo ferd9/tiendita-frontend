@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductoService } from '../../services/producto.service';
 import { Categoria, Proveedores, Tag } from '../interfaces/tienda.interfaces';
 import { ProveedorComponent } from '../proveedor/proveedor.component';
@@ -24,6 +24,7 @@ export class ProductoComponent {
   public categoria: Categoria[] = [];
   public tag: Tag[] = [];
 
+  public onBuscarProveedor: boolean =  false;
   //constructor(private changeDetector: ChangeDetectorRef){}
 
   public formProducto: FormGroup = this.fb.group({
@@ -33,11 +34,7 @@ export class ProductoComponent {
     'imgenUrl': [''],
     'disponible':[true],
     'fechaDeLanzamiento':[new Date,[Validators.required]],
-    'proveedores': this.fb.array([
-      this.fb.group({
-        'nombre': ['']
-      })
-    ])
+    'proveedores': this.fb.array([])
   });
 
  registrarProducto(){
@@ -70,5 +67,38 @@ export class ProductoComponent {
 
   agregarProveedor($event: Proveedores) {
     this.proveedores.push($event);
+    const prov = this.formProducto.get('proveedores') as FormArray;
+    const pg = this.fb.group({
+      'nombre': [$event.nombre,],
+      'direccion': [$event.direccion],
+      'ruc': [$event.ruc],
+      'email': [$event.email],
+      'telefono': [$event.telefono]
+    });
+
+    prov.push(pg);
+
+    console.log((<FormArray>this.formProducto.get('proveedores')));
+  }
+
+  nuevoProveedor(){
+    this.onBuscarProveedor = true;
+  }
+
+  proveedorSelecionado($event: Proveedores){
+
+    this.proveedores.push($event);
+    const prov = this.formProducto.get('proveedores') as FormArray;
+    const pg = this.fb.group({
+      'id': [$event.id],
+      'nombre': [$event.nombre,],
+      'direccion': [$event.direccion],
+      'ruc': [$event.ruc],
+      'email': [$event.email],
+      'telefono': [$event.telefono]
+    });
+
+    prov.push(pg);
+
   }
 }

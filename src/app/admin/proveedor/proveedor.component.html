@@ -1,58 +1,91 @@
 
 <div class="card">
   <div class="card-header">
-    Registrar Proveedor
+    {{titulo}}
   </div>
   <div class="card-body">
+    @if(modo === "REGISTRAR" || modo === "AMBOS"){
 
-    <form [formGroup]="formProveedor" (ngSubmit)="agregarProveedor()" class="row g-3">
-      <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Nombre</label>
-        <input
-        type="text"
-        formControlName="nombre"
-        name="nombre"
-        class="form-control"
-        id="inputEmail4">
-      </div>
-      <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Ruc</label>
-        <input type="text"
-        class="form-control"
-        formControlName="ruc"
-        name="ruc"
-        id="inputPassword4">
-      </div>
-      <div class="col-12">
-        <label for="inputAddress" class="form-label">Direccion</label>
-        <input type="text"
-        class="form-control"
-        formControlName="direccion"
-        name="direccion"
-        id="inputAddress"
-        placeholder="1234 Main St">
-      </div>
-      <div class="col-md-6">
-        <label for="inputAddress2" class="form-label">Telefono</label>
-        <input type="text"
-        class="form-control"
-        formControlName="telefono"
-        name="telefono"
-        id="inputAddress2"
-        placeholder="963258741">
-      </div>
-      <div class="col-md-6">
-        <label for="inputCity" class="form-label">Email</label>
-        <input type="text"
-        class="form-control"
-        formControlName="email"
-        name="email"
-         id="inputCity">
-      </div>
-      <div class="col-12">
-        <button type="submit" class="btn btn-primary">Registrar</button>
-      </div>
-    </form>
+      <form [formGroup]="formProveedor" (ngSubmit)="agregarProveedor()" class="row g-3">
+        <div class="col-md-6">
+          <label for="inputEmail4" class="form-label">Nombre</label>
+          <input
+          type="text"
+          formControlName="nombre"
+          name="nombre"
+          class="form-control"
+          id="inputEmail4">
+        </div>
+        <div class="col-md-6">
+          <label for="inputPassword4" class="form-label">Ruc</label>
+          <input type="text"
+          class="form-control"
+          formControlName="ruc"
+          name="ruc"
+          id="inputPassword4">
+        </div>
+        <div class="col-12">
+          <label for="inputAddress" class="form-label">Direccion</label>
+          <input type="text"
+          class="form-control"
+          formControlName="direccion"
+          name="direccion"
+          id="inputAddress"
+          placeholder="1234 Main St">
+        </div>
+        <div class="col-md-6">
+          <label for="inputAddress2" class="form-label">Telefono</label>
+          <input type="text"
+          class="form-control"
+          formControlName="telefono"
+          name="telefono"
+          id="inputAddress2"
+          placeholder="963258741">
+        </div>
+        <div class="col-md-6">
+          <label for="inputCity" class="form-label">Email</label>
+          <input type="text"
+          class="form-control"
+          formControlName="email"
+          name="email"
+           id="inputCity">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+      </form>
+    }
+
+    <table class="table table-dark table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">direccion</th>
+          <th scope="col">ruc</th>
+          <th scope="col">email</th>
+          <th scope="col">telefono</th>
+          <th scope="col">Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (pItem of proveedorList; track $index) {
+
+          <tr>
+            <td>{{pItem.nombre}}</td>
+            <td>{{pItem.direccion}}</td>
+            <td>{{pItem.ruc}}</td>
+            <td>{{pItem.email}}</td>
+            <td>{{pItem.telefono}}</td>
+            <td><button class="btn btn-primary" (click)="addProveedor(pItem)">+</button></td>
+          </tr>
+
+        }
+
+      </tbody>
+
+
+    </table>
+
   </div>
 </div>
 
