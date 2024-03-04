@@ -95,10 +95,10 @@
         <div class="card-body">
 
           <ul class="list-group">
-            @for (proveedor of proveedores; track $index) {
+            @for (proveedor of arrayProveedores; track $index) {
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 {{proveedor.nombre}}
-                <span class="badge bg-primary rounded-pill">14</span>
+                <span class="badge bg-danger" (click)="quitarPorveedorSeleccionado($index)">x</span>
               </li>
             }@empty {
               <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -154,7 +154,11 @@
 
 @if(onBuscarProveedor){
   <div class="col-6">
-    <app-proveedor (onNewProveedor)="agregarProveedor($event)" (onAddProveedor)="proveedorSelecionado($event)"></app-proveedor>
+    <app-proveedor
+    (onNewProveedor)="agregarProveedor($event)"
+    (onAddProveedor)="proveedorSelecionado($event)"
+    [preveedorRegresado]="proveedorRemovido"
+    ></app-proveedor>
   </div>
 }
 

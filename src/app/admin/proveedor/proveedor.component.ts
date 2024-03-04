@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { Proveedores } from '../interfaces/tienda.interfaces';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProveedorService } from '../../services/proveedor.service';
@@ -16,7 +16,7 @@ const enum MODE{
   templateUrl: './proveedor.component.html',
   styleUrl: './proveedor.component.css'
 })
-export class ProveedorComponent implements OnInit{
+export class ProveedorComponent implements OnInit, OnChanges{
 
 
   public titulo: string = "Registrar Proveedor";
@@ -27,6 +27,9 @@ export class ProveedorComponent implements OnInit{
   public newProveedor?: Proveedores;
 
   public selectedProveedor?: Proveedores;
+
+  @Input()
+  public preveedorRegresado?: Proveedores;
 
   private fb = inject(FormBuilder);
   private proveedorService = inject(ProveedorService);
@@ -44,8 +47,17 @@ export class ProveedorComponent implements OnInit{
   @Output()
   public onAddProveedor: EventEmitter<Proveedores> = new EventEmitter();
 
+  @Output()
+  public onQuitarProveedorDeTabla: EventEmitter<Proveedores[]> = new EventEmitter();
+
   ngOnInit(): void {
     this.mostrarProveedores();
+  }
+
+  ngOnChanges(): void {
+      if(this.preveedorRegresado){
+          this.proveedorList.push(this.preveedorRegresado);
+      }
   }
 
   agregarProveedor(){
@@ -73,11 +85,13 @@ export class ProveedorComponent implements OnInit{
     this.onAddProveedor.emit(this.selectedProveedor);
   }
 
-  addProveedor(pAdd: Proveedores){
-    this.selectedProveedor = pAdd;
-    this.onSelecionarProveedor();
+  addProveedor(index: number){
+    this.selectedProveedor = this.proveedorList.splice(index,1)[0];
+    this.onSelecionarProveedor()
   }
 
+  onEventQuitarProveedorDeTabla(){
 
+  }
 
 }

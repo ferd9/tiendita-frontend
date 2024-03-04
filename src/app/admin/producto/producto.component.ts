@@ -20,9 +20,10 @@ export class ProductoComponent {
 
   public countNuevos:number = 0;
 
-  public proveedores: Proveedores[] = [];
   public categoria: Categoria[] = [];
   public tag: Tag[] = [];
+
+  public proveedorRemovido?: Proveedores;
 
   public onBuscarProveedor: boolean =  false;
   //constructor(private changeDetector: ChangeDetectorRef){}
@@ -66,7 +67,6 @@ export class ProductoComponent {
 
 
   agregarProveedor($event: Proveedores) {
-    this.proveedores.push($event);
     const prov = this.formProducto.get('proveedores') as FormArray;
     const pg = this.fb.group({
       'nombre': [$event.nombre,],
@@ -87,9 +87,8 @@ export class ProductoComponent {
 
   proveedorSelecionado($event: Proveedores){
 
-    this.proveedores.push($event);
-    const prov = this.formProducto.get('proveedores') as FormArray;
-    const pg = this.fb.group({
+    const proveedorArrayForm = this.formProducto.get('proveedores') as FormArray;
+    const nuevoProveedorGroup = this.fb.group({
       'id': [$event.id],
       'nombre': [$event.nombre,],
       'direccion': [$event.direccion],
@@ -98,7 +97,19 @@ export class ProductoComponent {
       'telefono': [$event.telefono]
     });
 
-    prov.push(pg);
+    proveedorArrayForm.push(nuevoProveedorGroup);
+    console.log(proveedorArrayForm.value);
+  }
 
+  get arrayProveedores(){
+    const proveedoresArrayForm = this.formProducto.get('proveedores') as FormArray;
+    const listaProveedoresSeleccionados: Proveedores[] = proveedoresArrayForm.value;
+    return listaProveedoresSeleccionados;
+  }
+
+  quitarPorveedorSeleccionado(index: number){
+    const proveedoresArrayForm = this.formProducto.get('proveedores') as FormArray;
+    this.proveedorRemovido = {...proveedoresArrayForm.value[index]};
+    proveedoresArrayForm.removeAt(index);
   }
 }
