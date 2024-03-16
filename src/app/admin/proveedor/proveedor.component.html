@@ -68,7 +68,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (pItem of proveedorList; track $index) {
+        @for (pItem of pagination?.content; track $index) {
 
           <tr>
             <td>{{pItem.nombre}}</td>
@@ -82,10 +82,46 @@
         }
 
       </tbody>
-
-
     </table>
+    <ng-container *ngIf="(usersState$ | async) as state">
+    <nav *ngIf="state.appData?.content" aria-label="Page navigation example">
+      <ul class="pagination justify-content-end">
+        <li class="page-item pointer" [ngClass]="0 == (currentPage$ | async) ? ' disabled' : ''">
+          <a (click)="goToNextOrPreviousPage('backward')" class="page-link" aria-label="Previous">
+            <span aria-hidden="true">&laquo; Previous</span>
+          </a>
+        </li>
+        <li *ngFor="let pageNumber of [].constructor(state.appData?.totalPages); let i = index;"
+            class="page-item pointer" [ngClass]="i == (currentPage$ | async) ? ' active' : ''">
+          <a (click)="gotToPage(i)" class="page-link">
+            {{ i + 1 }}
+          </a>
+        </li>
+        <li class="page-item pointer" [ngClass]="(state.appData!.totalPages - 1) == (currentPage$ | async) ? ' disabled' : ''">
+          <a (click)="goToNextOrPreviousPage('forward')" class="page-link" aria-label="Next">
+            <span aria-hidden="true">Next &raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
 
+  <!--
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a class="page-link" (click)="rewind()">Anterior</a></li>
+        @for (num of totalPages; track $index) {
+          <li class="page-item" [ngClass]="{'active': $index === page }"><a
+            class="page-link"
+            (click)="setPage($index)">{{ $index + 1}}</a></li>
+        }
+        <li class="page-item"><a class="page-link" (click)="forward()">Siguiente</a></li>
+      </ul>
+    </nav>
+    -->
+    <pre>
+      {{pagination | json}}
+    </pre>
   </div>
 </div>
 

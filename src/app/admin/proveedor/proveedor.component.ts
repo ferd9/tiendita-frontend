@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
-import { Proveedores } from '../interfaces/tienda.interfaces';
+import { Pagination, Proveedores } from '../interfaces/tienda.interfaces';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProveedorService } from '../../services/proveedor.service';
+import { CommonModule } from '@angular/common';
+import { BehaviorSubject, Observable, catchError, map, of, startWith } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const enum MODE{
   REGISTRAR =  'REGISTRAR',
@@ -12,7 +15,7 @@ const enum MODE{
 @Component({
   selector: 'app-proveedor',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './proveedor.component.html',
   styleUrl: './proveedor.component.css'
 })
@@ -20,6 +23,16 @@ export class ProveedorComponent implements OnInit, OnChanges{
 
 
   public titulo: string = "Registrar Proveedor";
+
+  /**
+   * mediante observables.
+   */
+  public usersState$: Observable<{appData?: Pagination, error?: HttpErrorResponse }>;
+  public responseSubject = new BehaviorSubject<Pagination>(this.pagination!);
+  private currentPageSubject = new BehaviorSubject<number>(0);
+  currentPage$ = this.currentPageSubject.asObservable();
+
+
   public modo: MODE = MODE.REGISTRAR;
 
   public proveedorList: Proveedores[] = [];
@@ -30,6 +43,10 @@ export class ProveedorComponent implements OnInit, OnChanges{
 
   @Input()
   public preveedorRegresado?: Proveedores;
+
+  public pagination?: Pagination;
+
+  public totalPages: Array<number> = [];
 
   private fb = inject(FormBuilder);
   private proveedorService = inject(ProveedorService);
@@ -49,9 +66,32 @@ export class ProveedorComponent implements OnInit, OnChanges{
 
   @Output()
   public onQuitarProveedorDeTabla: EventEmitter<Proveedores[]> = new EventEmitter();
+  public isFirst: boolean = false;
+  public isLast: boolean = false;
+  public page: number = 0;
+  public size: number = 2;
 
+
+  constructor(){
+
+     //this.loadingService.loadingOn();
+     this.usersState$ = this.proveedorService.listProveedores$(0,2).pipe(
+      map((response: Pagination) => {
+        //this.loadingService.loadingOff();
+        this.responseSubject.next(response);
+        this.currentPageSubject.next(response.number);
+        console.log(response);
+        return ({appData: response });
+      }),
+      catchError((error: HttpErrorResponse) =>{
+        return of({ error })}
+        )
+    )
+
+  }
   ngOnInit(): void {
-    this.mostrarProveedores();
+
+    //this.mostrarProveedores();
   }
 
   ngOnChanges(): void {
@@ -74,9 +114,15 @@ export class ProveedorComponent implements OnInit, OnChanges{
   }
 
   mostrarProveedores(){
-    this.proveedorService.listarProveedores().subscribe(
+    this.proveedorService.listarProveedores(this.page, this.size).subscribe(
       resp => {
-        this.proveedorList = resp;
+        //this.proveedorList = resp;
+        this.pagination = resp;
+        this.totalPages = new Array(this.pagination.totalPages);
+        this.isFirst = this.pagination.first;
+        this.isLast = this.pagination.last;
+        console.log("Respuestaaa");
+        console.log({resp});
       }
     );
   }
@@ -90,8 +136,47 @@ export class ProveedorComponent implements OnInit, OnChanges{
     this.onSelecionarProveedor()
   }
 
+  rewind(): void {
+    if (!this.isFirst) {
+      this.page--;
+      this.mostrarProveedores();
+    }
+  }
+
+  forward(): void {
+    if (!this.isLast) {
+      this.page++;
+      this.mostrarProveedores();
+    }
+  }
+
+  setPage(page: number): void {
+    this.page = page;
+    this.mostrarProveedores();
+  }
+
   onEventQuitarProveedorDeTabla(){
 
+  }
+
+  gotToPage(pageNumber: number = 0): void {
+
+    this.usersState$ = this.proveedorService.listProveedores$(pageNumber).pipe(
+      map((response: Pagination) => {
+        this.responseSubject.next(response);
+        this.currentPageSubject.next(pageNumber);
+        console.log(response);
+        return ({ appData: response });
+      }),
+      startWith({appData: this.responseSubject.value }),
+      catchError((error: HttpErrorResponse) =>{
+        return of({error })}
+        )
+    )
+  }
+
+  goToNextOrPreviousPage(direction?: string): void {
+    this.gotToPage(direction === 'forward' ? this.currentPageSubject.value + 1 : this.currentPageSubject.value - 1);
   }
 
 }
