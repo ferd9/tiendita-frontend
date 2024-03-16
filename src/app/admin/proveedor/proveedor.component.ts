@@ -27,8 +27,8 @@ export class ProveedorComponent implements OnInit, OnChanges{
   /**
    * mediante observables.
    */
-  public usersState$: Observable<{appData?: Pagination, error?: HttpErrorResponse }>;
-  public responseSubject = new BehaviorSubject<Pagination>(this.pagination!);
+  public usersState$: Observable<{appData?: Pagination, error?: HttpErrorResponse }> | undefined = undefined;
+  public responseSubject = new BehaviorSubject<Pagination | null>(null);
   private currentPageSubject = new BehaviorSubject<number>(0);
   currentPage$ = this.currentPageSubject.asObservable();
 
@@ -73,11 +73,14 @@ export class ProveedorComponent implements OnInit, OnChanges{
 
 
   constructor(){
+  }
+  ngOnInit(): void {
 
      //this.loadingService.loadingOn();
-     this.usersState$ = this.proveedorService.listProveedores$(0,2).pipe(
+     this.usersState$ = this.proveedorService.listProveedores$(0,20).pipe(
       map((response: Pagination) => {
         //this.loadingService.loadingOff();
+        this.proveedorList = response.content;
         this.responseSubject.next(response);
         this.currentPageSubject.next(response.number);
         console.log(response);
@@ -88,8 +91,7 @@ export class ProveedorComponent implements OnInit, OnChanges{
         )
     )
 
-  }
-  ngOnInit(): void {
+
 
     //this.mostrarProveedores();
   }
@@ -161,14 +163,15 @@ export class ProveedorComponent implements OnInit, OnChanges{
 
   gotToPage(pageNumber: number = 0): void {
 
-    this.usersState$ = this.proveedorService.listProveedores$(pageNumber).pipe(
+    this.usersState$ = this.proveedorService.listProveedores$(pageNumber,20).pipe(
       map((response: Pagination) => {
+        this.proveedorList = response.content;
         this.responseSubject.next(response);
         this.currentPageSubject.next(pageNumber);
         console.log(response);
         return ({ appData: response });
       }),
-      startWith({appData: this.responseSubject.value }),
+      startWith({appData: this.responseSubject.value! }),
       catchError((error: HttpErrorResponse) =>{
         return of({error })}
         )
